@@ -1,8 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-{% load url from future %}
 {% load i18n %}
-{% load django_th_extras %}
 {% block title %}{% trans "My Triggers" %} - {{ user.username }}{% endblock %}
 {% block content %}
     <div class="col-md-12" id="trigger-content">
@@ -15,7 +13,7 @@
         <div class="form-actions">
             <input type="hidden" name="next" value="{{ next }}" />
             <input type="hidden" name="trigger_id" value="{{ trigger_id }}" />
-            <input class="btn btn-danger" name="ok" type="submit" value="{% trans "Yes" %}" />
+            <input class="btn btn-danger" name="ok" type="submit" value="{% trans 'Yes' %}" />
             <a href="{% url 'base' %}" class="btn btn-primary">{% trans "No" %}</a>
         </div>
         </form>

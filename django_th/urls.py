@@ -1,23 +1,28 @@
+from django.conf import settings
 from django.conf.urls import patterns, include, url
+from django_th.forms.wizard import DummyForm, ProviderForm
+from django_th.forms.wizard import ConsumerForm, ServicesDescriptionForm
+
+from django_th.views import TriggerListView, TriggerDeleteView
+from django_th.views import TriggerUpdateView, TriggerEditedTemplateView
+from django_th.views import TriggerDeletedTemplateView, trigger_on_off
+from django_th.views import trigger_switch_all_to, trigger_edit
+from django_th.views import service_related_triggers_switch_to
+
+from django_th.views_userservices import UserServiceListView
+from django_th.views_userservices import UserServiceCreateView
+from django_th.views_userservices import UserServiceUpdateView
+from django_th.views_userservices import UserServiceDeleteView
+from django_th.views_userservices import renew_service
+from django_th.views_wizard import UserServiceWizard
 
 from django.contrib import admin
 admin.autodiscover()
 
-from django_th.forms.wizard import DummyForm, ProviderForm, \
-    ConsumerForm, ServicesDescriptionForm
-
-from django_th.views import TriggerListView, TriggerDeleteView, \
-    TriggerUpdateView, \
-    TriggerEditedTemplateView, TriggerDeletedTemplateView, \
-    UserServiceWizard, UserServiceListView, \
-    UserServiceCreateView, UserServiceDeleteView, \
-    UserServiceAddedTemplateView, UserServiceDeletedTemplateView, \
-    trigger_on_off, trigger_switch_all_to, \
-    trigger_edit, renew_service, service_related_triggers_switch_to
-
 urlpatterns = \
     patterns('',
-             url(r'^jsreverse/$', 'django_js_reverse.views.urls_js', name='js_reverse'),
+             url(r'^jsreverse/$', 'django_js_reverse.views.urls_js',
+                 name='js_reverse'),
              # ****************************************
              # admin module
              # ****************************************
@@ -77,26 +82,25 @@ urlpatterns = \
              # ****************************************
              url(r'^th/service/$', UserServiceListView.as_view(),
                  name='user_services'),
+             url(r'^th/service/(?P<action>\w+)$',
+                 UserServiceListView.as_view(),
+                 name='user_services'),
              url(r'^th/service/add/$', UserServiceCreateView.as_view(),
                  name='add_service'),
+             url(r'^th/service/edit/(?P<pk>\d+)$',
+                 UserServiceUpdateView.as_view(),
+                 name='edit_service'),
              url(r'^th/service/delete/(?P<pk>\d+)$',
                  UserServiceDeleteView.as_view(),
                  name='delete_service'),
-             url(r'^th/service/add/thanks',
-                 UserServiceAddedTemplateView.as_view(),
-                 name="service_add_thanks"),
-             # name="service_added"),
              url(r'^th/service/renew/(?P<pk>\d+)$',
                  renew_service,
                  name="renew_service"),
              url(r'^th/service/delete/$',
                  UserServiceDeleteView.as_view(),
                  name='delete_service'),
-             url(r'^th/service/delete/thanks',
-                 UserServiceDeletedTemplateView.as_view(),
-                 name="service_delete_thanks"
-                 ),
-             url(r'^th/service/onoff/(?P<user_service_id>\d+)/(?P<switch>(on|off))$',
+             url(r'^th/service/onoff/(?P<user_service_id>\d+)/(?P<switch>'
+                 r'(on|off))$',
                  service_related_triggers_switch_to,
                  name="service_related_triggers_switch_to"),
              # ****************************************
@@ -113,29 +117,58 @@ urlpatterns = \
              # and give the service_name value to use to
              # trigger the real callback
              url(r"^th/callbackevernote/$",
-                 "django_th.views.finalcallback",
+                 "django_th.views_wizard.finalcallback",
                  {'service_name': 'ServiceEvernote', },
                  name="evernote_callback",
                  ),
              url(r"^th/callbackpocket/$",
-                 "django_th.views.finalcallback",
+                 "django_th.views_wizard.finalcallback",
                  {'service_name': 'ServicePocket', },
                  name="pocket_callback",
                  ),
              url(r"^th/callbackreadability/$",
-                 "django_th.views.finalcallback",
+                 "django_th.views_wizard.finalcallback",
                  {'service_name': 'ServiceReadability', },
                  name="readability_callback",
                  ),
              url(r"^th/callbacktwitter/$",
-                 "django_th.views.finalcallback",
+                 "django_th.views_wizard.finalcallback",
                  {'service_name': 'ServiceTwitter', },
                  name="twitter_callback",
                  ),
-             url(r"^th/callbackfacebook/$",
-                 "django_th.views.finalcallback",
-                 {'service_name': 'ServiceFacebook', },
-                 name="facebook_callback",
+             url(r"^th/callbacktrello/$",
+                 "django_th.views_wizard.finalcallback",
+                 {'service_name': 'ServiceTrello', },
+                 name="trello_callback",
                  ),
-
+             url(r"^th/callbackgithub/$",
+                 "django_th.views_wizard.finalcallback",
+                 {'service_name': 'ServiceGithub', },
+                 name="github_callback",
+                 ),
+             url(r"^th/callbackwallabag/$",
+                 "django_th.views_wizard.finalcallback",
+                 {'service_name': 'ServiceWallabag', },
+                 name="wallabag_callback",
+                 ),
+             url(r"^th/callbacktodoist/$",
+                 "django_th.views_wizard.finalcallback",
+                 {'service_name': 'ServiceTodoist', },
+                 name="todoist_callback",
+                 ),
+             url(r"^th/callbackpushbullet/$",
+                 "django_th.views_wizard.finalcallback",
+                 {'service_name': 'ServicePushbullet', },
+                 name="pushbullet_callback",
+                 ),
+             url(r'^th/myfeeds/', include('th_rss.urls')),
              )
+
+
+if 'th_holidays' in settings.INSTALLED_APPS:
+    urlpatterns += patterns('',
+                            url(r'^th/holidays/', include('th_holidays.urls')))
+
+if 'th_search' in settings.INSTALLED_APPS:
+    urlpatterns += patterns('',
+                            url(r'^th/search/', include('th_search.urls')))

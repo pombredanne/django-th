@@ -1,9 +1,5 @@
-# sample for dev purpose
-# to be used by the command :
-# python manage.py --settings=my_app.local_settings
-from .settings import *
-
 DEBUG = True
+TEMPLATE_DEBUG = DEBUG
 
 TH_EVERNOTE = {
     'sandbox': True,
@@ -21,6 +17,20 @@ TH_READABILITY = {
 }
 
 TH_TWITTER = {
+    # get your credential by subscribing to
+    # https://dev.twitter.com/
+    'consumer_key': 'my key',
+    'consumer_secret': 'my secret'
+}
+
+TH_TRELLO = {
+    'consumer_key': 'my key',
+    'consumer_secret': 'my secret'
+}
+
+TH_GITHUB = {
+    'username': 'username',
+    'password': 'password',
     'consumer_key': 'my key',
     'consumer_secret': 'my secret'
 }

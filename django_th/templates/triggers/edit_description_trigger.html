@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load static %}
-{% load url from future %}
 {% load i18n %}
 {% block title %}{% trans "My Services" %} - {{ user.username }}{% endblock %}
 {% block content %}
@@ -21,10 +20,10 @@
 
             <div class="form-group form-actions">
                 <div class="col-sm-offset-2 col-sm-4">
-                    <button class="btn btn-primary">{% trans "Edit it" %}</button>
+                    <button class="btn btn-primary">{% trans "Save it" %}</button>
                 </div>
             </div>
         </fieldset>
         </form>
-    </div> 
+    </div>
 {% endblock %}

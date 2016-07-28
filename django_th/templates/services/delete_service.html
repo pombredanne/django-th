@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load static %}
-{% load url from future %}
 {% load i18n %}
 {% load django_th_extras %}
 {% block title %}{% trans "My Services" %} - {{ user.username }}{% endblock %}
@@ -13,9 +12,9 @@
         <form method="post" role="form" class="form-horizontal" action="">
         {% csrf_token %}
         <div class="form-actions">
-            <input class="btn btn-danger" name="ok" type="submit" value="{% trans "Yes" %}" />
+            <input class="btn btn-danger" name="ok" type="submit" value="{% trans 'Yes' %}" />
             <a href="{% url 'user_services' %}" class="btn btn-primary">{% trans "No" %}</a>
         </div>
         </form>
-    </div> 
+    </div>
 {% endblock %}

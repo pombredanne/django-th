@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 from django.conf import settings
 from collections import OrderedDict
 
@@ -9,10 +9,11 @@ class ServiceProvider(OrderedDict):
         """
             get the service from the settings
         """
+        kwargs = {}
         for class_path in services:
             module_name, class_name = class_path.rsplit('.', 1)
             klass = import_from_path(class_path)
-            service = klass()
+            service = klass(None, **kwargs)
             self.register(class_name, service)
 
     def register(self, class_name, service):
@@ -35,7 +36,8 @@ def import_from_path(path):
     """
     module_name, class_name = path.rsplit('.', 1)
     try:
-        return getattr(__import__(module_name, fromlist=[class_name]), class_name)
+        return getattr(__import__(module_name,
+                                  fromlist=[class_name]), class_name)
     except AttributeError:
         raise ImportError('Unable to import %s' % path)
 

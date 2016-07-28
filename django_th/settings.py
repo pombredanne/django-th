@@ -1,13 +1,15 @@
 # Django settings for django_th project.
 import os
+from django.core.urlresolvers import reverse_lazy
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = ["*"]
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
 
 DATABASES = {
     'default': {
@@ -19,6 +21,10 @@ DATABASES = {
         'PASSWORD': '',  # Not used with sqlite3.
         'HOST': '',  # Set to empty string for localhost. Not used with sqlite3
         'PORT': '',  # Set to empty string for default. Not used with sqlite3.
+    },
+    'TEST': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR + '/test_trigger_happy.sqlite3',
     }
 }
 
@@ -109,27 +115,30 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
-    'django_th',
-
-    'th_rss',
-
-    'pocket',
-    'th_pocket',
-
+    'formtools',
     'django_js_reverse',
-
-    # Uncomment the next line to enable the service:
-    #'evernote', # then do pip install evernote
-    #'th_evernote',
-
-    # Uncomment the next line to enable the service:
-    # 'th_twitter', #then do pip install python-twitter
-    # 'th_readability', #then do pip install readability-api
+    'django_th',
+    'th_rss',
+    # uncomment the lines to enable the service you need
+    # 'th_evernote',
+    # 'th_github',
+    # 'th_holidays',
+    # 'th_instapush',
+    # 'haystack',
+    # 'th_pelican',
+    # 'th_pocket',
+    # 'th_pushbullet',
+    # 'th_readability',
+    # 'th_search',
+    # 'th_trello',
+    # 'th_twitter',
+    'th_wallabag',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.request'
+    'django.core.context_processors.request',
+    # 'django.template.context_processors.request',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -142,7 +151,8 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '%(asctime)s %(levelname)s %(module)s %(process)d %(message)s'
+            'format':
+                '%(asctime)s %(levelname)s %(module)s %(process)d %(message)s'
         },
         'simple': {
             'format': '%(levelname)s %(message)s'
@@ -188,11 +198,7 @@ LOGGING = {
     }
 }
 
-
-AUTH_PROFILE_MODULE = 'django_th.UserProfile'
-
 # go back on home page after logged in
-from django.core.urlresolvers import reverse_lazy
 LOGIN_REDIRECT_URL = reverse_lazy('base')
 
 CACHES = {
@@ -205,85 +211,230 @@ CACHES = {
             'MAX_ENTRIES': 1000
         }
     },
-    'rss':
+    # Evernote Cache
+    'th_evernote':
     {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': BASE_DIR + '/cache/rss/',
-        'TIMEOUT': 3600,
-        'OPTIONS': {
-            'MAX_ENTRIES': 1000
+        'TIMEOUT': 500,
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
-    }
+    },
+    # Pocket Cache
+    'th_pocket':
+    {
+        'TIMEOUT': 500,
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/2",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    # RSS Cache
+    'th_rss':
+    {
+        'TIMEOUT': 500,
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/3",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    # Readability
+    'th_readability':
+    {
+        'TIMEOUT': 500,
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/4",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    # Twitter Cache
+    'th_twitter':
+    {
+        'TIMEOUT': 500,
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/5",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    # Trello
+    'th_trello':
+    {
+        'TIMEOUT': 3600,
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/6",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    # GitHub
+    'th_github':
+    {
+        'TIMEOUT': 3600,
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/7",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    # Pelican
+    'th_pelican':
+    {
+        'TIMEOUT': 3600,
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/8",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    # Todoist
+    'th_todoist':
+    {
+        'TIMEOUT': 3600,
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/11",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    # Wallabag
+    'th_wallabag':
+    {
+        'TIMEOUT': 3600,
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/9",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    # Pushbullet
+    'th_pushbullet':
+    {
+        'TIMEOUT': 3600,
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/12",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    'redis-cache':
+    {
+        'TIMEOUT': 3600,
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://localhost:6379/10",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "MAX_ENTRIES": 5000,
+        }
+    },
+
 }
 
+DJANGO_TH = {
+    # paginating
+    'paginate_by': 5,
+
+    # this permits to avoid "flood" effect when publishing
+    # to the target service - when limit is reached
+    # the cache is kept until next time
+    # set it to 0 to drop that limit
+    'publishing_limit': 0,
+    # number of process to spawn from multiprocessing.Pool
+    'processes': 5,
+}
 
 TH_SERVICES = (
-    #comment the line to disable the service you dont want
+    # uncomment the lines to enable the service you need
     'th_rss.my_rss.ServiceRss',
-    'th_pocket.my_pocket.ServicePocket',
-    #uncomment the next lines you want, once you've uncommented the line in INSTALLED_APPS
-    #'th_evernote.my_evernote.ServiceEvernote',
-    #'th_readability.my_readability.ServiceReadability',
-    #'th_twitter.my_twitter.ServiceTwitter',
+    # 'th_pocket.my_pocket.ServicePocket',
+    # 'th_evernote.my_evernote.ServiceEvernote',
+    # 'th_readability.my_readability.ServiceReadability',
+    # 'th_twitter.my_twitter.ServiceTwitter',
+    # 'th_trello.my_trello.ServiceTrello',
+    # 'th_github.my_github.ServiceGithub',
+    # 'th_pelican.my_pelican.ServicePelican',
+    # 'th_todoist.my_todoist.ServiceTodoist',
+    # 'th_pushbullet.my_pushbullet.ServicePushbullet',
+    # 'th_instapush.my_pushbullet.ServicePushbullet',
+    'th_instapush.my_instapush.ServiceInstapush',
 )
 
 
-TH_POCKET = {
-    #get your credential by subscribing to http://getpocket.com/developer/
-    'consumer_key': '<your pocket key>',
-}
-
-
 TH_EVERNOTE = {
-    #get your credential by subscribing to http://dev.evernote.com/
-    #for testing purpose set sandbox to True
-    #for production purpose set sandbox to False
+    # get your credential by subscribing to http://dev.evernote.com/
+    # for testing purpose set sandbox to True
+    # for production purpose set sandbox to False
     'sandbox': False,
     'consumer_key': '<your evernote key>',
     'consumer_secret': '<your evernote secret>',
 }
 
-# not python 3 compliant
+
+TH_GITHUB = {
+    'username': 'username',
+    'password': 'password',
+    'consumer_key': 'my key',
+    'consumer_secret': 'my secret'
+}
+
+
+TH_POCKET = {
+    # get your credential by subscribing to http://getpocket.com/developer/
+    'consumer_key': '<your pocket key>',
+}
+
+TH_PUSHBULLET = {
+    'consumer_key': '<your pushbullet key>',
+    'consumer_secret': '<your pushbullet secret>',
+}
+
 TH_READABILITY = {
     # get your credential by subscribing to
-    #https://www.readability.com/settings/account
+    # https://www.readability.com/settings/account
     'consumer_key': '<your readability key>',
     'consumer_secret': '<your readability secret>',
 }
 
+TH_TODOIST = {
+    'client_id': '<your todoist key>',
+    'client_secret': '<your todoist secret>',
+}
+
+TH_TRELLO = {
+    'consumer_key': '<your twitter key>',
+    'consumer_secret': '<your twitter secret>',
+}
 
 TH_TWITTER = {
-    #get your credential by subscribing to
-    #https://dev.twitter.com/
+    # get your credential by subscribing to
+    # https://dev.twitter.com/
     'consumer_key': '<your twitter key>',
     'consumer_secret': '<your twitter secret>',
 }
 
 SECRET_KEY = 'to be defined :P'
 
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'haystack',
+    },
+}
+
+TEST_RUNNER = 'django_th.runner.DiscoverRunnerTriggerHappy'
+# Unit Test are buggy for this app ; so do not make them
+TEST_RUNNER_WHITELIST = ('django_rq',)
+
+# for the pelican website generator, set the author's name of the posts here
+TH_PELICAN_AUTHOR = 'Foxmask'
+
+# local settings management
 try:
-    import debug_toolbar
+    from .local_settings import *
 except ImportError:
     pass
-else:
-    INSTALLED_APPS += (
-        # If you're using Django 1.7.x or later
-        'debug_toolbar.apps.DebugToolbarConfig',
-        # If you're using Django 1.6.x or earlier
-        # 'debug_toolbar',
-    )
-    DEBUG_TOOLBAR_PANELS = [
-        'debug_toolbar.panels.versions.VersionsPanel',
-        'debug_toolbar.panels.timer.TimerPanel',
-        'debug_toolbar.panels.settings.SettingsPanel',
-        'debug_toolbar.panels.headers.HeadersPanel',
-        'debug_toolbar.panels.request.RequestPanel',
-        'debug_toolbar.panels.sql.SQLPanel',
-#        'elastic_panelpanel.ElasticDebugPanel',
-        'debug_toolbar.panels.staticfiles.StaticFilesPanel',
-        'debug_toolbar.panels.templates.TemplatesPanel',
-        'debug_toolbar.panels.cache.CachePanel',
-        'debug_toolbar.panels.signals.SignalsPanel',
-        'debug_toolbar.panels.logging.LoggingPanel',
-        'debug_toolbar.panels.redirects.RedirectsPanel',
-    ]

@@ -7,13 +7,13 @@ Here are the details that will permit to make working the application correctly
 urls.py
 -------
 
-add this line to the urls.py to be able to use the complete application 
+add this line to the urls.py to be able to use the complete application
 
 .. code-block:: python
 
     url(r'', include('django_th.urls')),
 
-this will give something like 
+this will give something like
 
 .. code-block:: python
 
@@ -30,7 +30,7 @@ this will give something like
     )
 
 
-settings.py 
+settings.py
 -----------
 
 add the module django_th, and its friends, to the INSTALLED_APPS
@@ -38,49 +38,86 @@ add the module django_th, and its friends, to the INSTALLED_APPS
 
 .. code-block:: python
 
-    INSTALLED_APPS = (
+   INSTALLED_APPS = (
+        ...
+        'formtools',
+        'django_js_reverse',
         'django_th',
         'th_rss',
-        'th_pocket',
-        'django_js_reverse',
+        # uncomment the lines to enable the service you need
+        # 'th_pocket',
+        # 'th_readability',
+        # 'evernote',
+        # 'th_evernote',
+        # 'th_twitter',
+        # 'th_holidays',
+        # 'th_trello',
+        # 'th_github',
+        # 'haystack',  # mandatory  if you plan to use th_search
+        # 'th_search', # then follow instructions from http://django-haystack.readthedocs.org/
+        # 'th_pelican',
+        # 'th_wallabag',
+        # 'th_todoist',
+        # 'th_pushbullet',
+
     )
 
-this setting supposes you already own a Pocket account
+
+do not forget to uncomment one of the service th_pocket, th_readability, th_evernote (and then evernote also) th_twitter, th_trello, th_github otherwise, the application wont work.
 
 TH_SERVICES
 ~~~~~~~~~~~
 
-TH_SERVICES is a list of the services, like for example,  
+TH_SERVICES is a list of the services, like for example,
 
 .. code-block:: python
 
     TH_SERVICES = (
+        # uncomment the lines to enable the service you need
         'th_rss.my_rss.ServiceRss',
-        'th_pocket.my_pocket.ServicePocket',
+        # 'th_pocket.my_pocket.ServicePocket',
+        # 'th_evernote.my_evernote.ServiceEvernote',
+        # 'th_readability.my_readability.ServiceReadability',
+        # 'th_trello.my_trello.ServiceTrello',
+        # 'th_twitter.my_twitter.ServiceTwitter',
+        # 'th_github.my_github.ServiceGithub',
+        # 'th_wallabag.my_wallabag.ServiceWallabag',
     )
 
-this setting supposes you already own a Pocket account
-
-If you plan to integrate django_th in an existing project then, to deal with the templates and avoid the TemplateDoesNotExist error you can 
-copy the template in your own templates directory or set the path like this :
-
-.. code-block:: python
-
-    import os
-    PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
-    TEMPLATE_DIRS += (
-        PROJECT_DIR + '/../../lib/<python-version>/site-package/django_th/templates/',
-    )
+do not forget to uncomment one of the line to enable another service, or the application wont work.
 
 
 Update the database
 -------------------
 
-Once the settings is done, enter the following command to sync the database
+Once the settings is done, enter the following command to sync the database :
+
 
 .. code-block:: bash
 
-    python manage.py syncdb
+    python manage.py migrate
+
+
+If you meet some errors with this command, have a look at MIGRATION_0.10.x_to_0.11.x.rst file
+
+
+If you are installing the project from scratch, do not forget to create a super user:
+
+
+.. code-block:: bash
+
+    python manage.py createsuperuser
+
+
+Start the application
+---------------------
+
+.. code-block:: bash
+
+    python manage.py runserver
+
+
+Now open your browser and go to 127.0.0.1:8000/th/ to start using the application
 
 
 Activate the services
@@ -89,23 +126,26 @@ Activate the services
 to activate a service, you will need to follow those steps
 
 * Requesting a key to the Services
-* Adding the key to the settings
+* Adding the key to your settings file
 * Adding the service from the Admin
 * Activating the service from your account from the public part of the website
 * Why this process ?
+
+
+in details this gives us :
 
 
 Requesting a key to the Services
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For each service, Trigger Happy expects to have some consumer key coming from the wanted service.
-So for each service, you need to register an account on each of this service, then required a key. 
+So for each service, you need to register an account on each of this service, then required a key.
 
 You can have a look at the `README of Twitter <https://github.com/foxmask/django-th-twitter/blob/master/README.rst>`_, or `README of Pocket <https://github.com/foxmask/django-th-pocket/blob/master/README.rst>`_
 
 Adding the key to the settings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Once you own the keys., You add them to the settings.py file in 
+Once you own the keys., You add them to the settings.py file in
 
 .. code-block:: python
 
@@ -123,25 +163,32 @@ For example for Twitter :
         'consumer_secret': 'abcdefghijklmnopqrstuvwxyz',
     }
 
+IMPORTANT :
+
+With all the service you will enable, to avoid to share your key by accident, I strongly recommand that you put all of them in a seperate local_settings.py that you include at the end of the main settings.py
+
+So, when I speak about settings.py think about local_settings.py
+
+
 
 Adding the service from the Admin
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Once you did **python manage.py syncdb** and followed the standard process to bootstrap the application, go to the admin panel of the application.
+Once you did **python manage.py migrate** and followed the standard process to bootstrap the application, go to the admin panel of the application.
 
-Admin Home of Trigger Happy : 
+Admin Home of Trigger Happy :
 
-.. image:: http://foxmask.info/public/trigger_happy/admin_home.png
-
-
-Admin list of activated services if Trigger Happy : 
-
-.. image:: http://foxmask.info/public/trigger_happy/admin_service_list.png
+.. image:: https://foxmask.trigger-happy.eu/static/trigger_happy/admin_home.png
 
 
-Admin Detail of one service of Trigger Happy : 
+Admin list of activated services if Trigger Happy :
 
-.. image:: http://foxmask.info/public/trigger_happy/admin_service_details.png
+.. image:: https://foxmask.trigger-happy.eu/static/trigger_happy/admin_service_list.png
+
+
+Admin Detail of one service of Trigger Happy :
+
+.. image:: https://foxmask.trigger-happy.eu/static/trigger_happy/admin_service_details.png
 
 Activating the service from your account from the public part of the website
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -150,49 +197,25 @@ Once your services are setup from the admin, you can go on the public part of th
 
 "My activated services" :
 
-.. image:: http://foxmask.info/public/trigger_happy/public_services_activated.png
+.. image:: https://foxmask.trigger-happy.eu/static/trigger_happy/public_services_activated.png
 
-Why this process ? 
+Why this process ?
 ~~~~~~~~~~~~~~~~~~
 
-* it is simple : actually, to use Trigger Happy you need to install and host it by yourself, and so, you need to "declare" for each service your instance of TriggerHappy. 
-* Other details : you need to activate the service from the admin panel, BECAUSE, TriggerHappy is planed to be used by many other users soon. So the admin of the instance of TriggerHappy will decide if he want to offer the possibility to use this service of this other one. Once the admin has done his job, the end user, from the "public part" can go to the list of service and add the new one etc.
+* it is simple : actually, to use Trigger Happy you need to install and host it by yourself, and so, you need to "declare" for each service your instance of TriggerHappy to the service provider.
+* Other details : you need to activate the service from the admin panel, BECAUSE, TriggerHappy is planed to be used by many other users soon. So the admin of the instance of TriggerHappy will decide if he wants to offer the possibility to use this service of this other one. Once the admin has done his job, the end user, from the "public part" can go to the list of services and add the new one etc.
 
 
 Others settings
 ---------------
 
-They are necessary if you want to be able to follow the log, cache rss and use the site framework
-
-Site Framework
-~~~~~~~~~~~~~~
-
-the site framework will be deprecated for the next release, anyway, for the current one (0.9.1) the required settings are :
+They are necessary if you want to be able to follow the log and set the cache
 
 
-.. code-block:: python
+CACHE
+~~~~~
 
-    SITE_ID = 1
-
-in INSTALLED_APPS add 
-
-.. code-block:: python
-
-    'django.contrib.sites',
-
-add to TEMPLATE_CONTEXT_PROCESSORS the context processor like this :
-
-.. code-block:: python
-
-
-    TEMPLATE_CONTEXT_PROCESSORS = (
-        'django.contrib.auth.context_processors.auth',
-        # get the Site information anywhere arround the page
-        'django_th.context_processors.current_site',
-        'django.core.context_processors.request'
-
-The Cache 
-~~~~~~~~~
+For each TriggerHappy component, define one cache like below
 
 .. code-block:: python
 
@@ -203,47 +226,161 @@ The Cache
             'LOCATION': BASE_DIR + '/cache/',
             'TIMEOUT': 600,
             'OPTIONS': {
-                'MAX_ENTRIES': 1000
+                'MAX_ENTRIES': 10000
             }
         },
-        'rss':
+        # Evernote Cache
+        'th_evernote':
         {
-            'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-            'LOCATION': BASE_DIR + '/cache/rss/',
-            'TIMEOUT': 3600,
-            'OPTIONS': {
-                'MAX_ENTRIES': 1000
+            'TIMEOUT': 500,
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379/1",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
             }
-        }
+        },
+        # Pocket Cache
+        'th_pocket':
+        {
+            'TIMEOUT': 500,
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379/2",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
+        },
+        # RSS Cache
+        'th_rss':
+        {
+            'TIMEOUT': 500,
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379/3",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
+        },
+        # Readability
+        'th_readability':
+        {
+            'TIMEOUT': 500,
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379/4",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
+        },
+        # Trello Cache
+        'th_trello':
+        {
+            'TIMEOUT': 500,
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379/5",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
+        },
+        # Twitter Cache
+        'th_twitter':
+        {
+            'TIMEOUT': 500,
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379/6",
+            "OPTIONS": {
+                "DB": 6,
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
+        },
+        # Github Cache
+        'th_github':
+        {
+            'TIMEOUT': 500,
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379/7",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
+        },
+        # Wallabag
+        'th_wallabag':
+        {
+                'TIMEOUT': 3600,
+                "BACKEND": "django_redis.cache.RedisCache",
+                "LOCATION": "redis://127.0.0.1:6379/9",
+                "OPTIONS": {
+                    "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                }
+        },
+
     }
 
+in the settings, 'default' may already exist in your settings.py, so dont use it, otherwise, if it doesnt, django will complain, so add it.
 
-The Log 
+
+The Log
 ~~~~~~~
 
 in the LOGGING add to loggers
 
 .. code-block:: python
 
-    'handlers': {
-        ...
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': BASE_DIR + '/trigger_happy.log',
-            'maxBytes': 61280,
-            'backupCount': 3,
-            'formatter': 'verbose',
+    LOGGING = {
+        'handlers': {
+            ...
+            'file': {
+                'level': 'INFO',
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': BASE_DIR + '/trigger_happy.log',
+                'maxBytes': 61280,
+                'backupCount': 3,
+                'formatter': 'verbose',
 
-        },
-    }
-    'loggers':
-    {
-        ...
-        'django_th.trigger_happy': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
+            },
+        }
+        'loggers':
+        {
+            ...
+            'django_th.trigger_happy': {
+                'handlers': ['console', 'file'],
+                'level': 'INFO',
+            }
         }
     }
 
 
+Once this is done we can create tasks in the crontab :
+
+
+Suppose my virtualenv is created in /home/trigger-happy and the django app is located in /home/trigger-happy/th :
+
+.. code-block:: bash
+
+    */12 * * * * . /home/trigger-happy/bin/activate && cd /home/trigger-happy/django_th/ && ./manage.py read
+    */15 * * * * . /home/trigger-happy/bin/activate && cd /home/trigger-happy/th/ && ./manage.py publish
+    */20 * * * * . /home/trigger-happy/bin/activate && cd /home/trigger-happy/th/ && ./manage.py recycle
+
+TH_HOLIDAYS
+~~~~~~~~~~~
+
+To use the Holidays feature, just add this piece of HTML in the template templates/mark_all.html :
+
+
+.. code:: html
+
+    <li role="presentation"><a role="menuitem" href="{% url 'holidays' %}" title="{% trans 'Set Triggers on Holidays ?' %}"><span class="glyphicon glyphicon-flag"></span>&nbsp;&nbsp;{% trans 'Set Triggers on Holidays ?' %}</a></li>
+
+
+HAYSTACK
+~~~~~~~~
+
+if you plan to use the search feature, put the engine of your choice, for example :
+
+.. code:: python
+
+    # needed to th_search and haystack
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+            'URL': 'http://127.0.0.1:9200/',
+            'INDEX_NAME': 'haystack',
+        },
+    }
